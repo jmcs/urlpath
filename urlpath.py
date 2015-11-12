@@ -25,6 +25,7 @@ import functools
 from pathlib import _PosixFlavour, PurePath
 import urllib.parse
 import re
+import requests
 try:
     from unittest.mock import patch
 except ImportError:
@@ -454,6 +455,91 @@ class URL(urllib.parse._NetlocResultMixinStr, PurePath):
         return self.__class__(urllib.parse.urlunsplit((
             self.scheme, self.netloc, path, self.query, self.fragment
         )))
+
+    def get(self, params=None, **kwargs):
+        """Sends a GET request.
+
+        :param params: (optional) Dictionary or bytes to be sent in the query string for the :class:`Request`.
+        :param \*\*kwargs: Optional arguments that ``request`` takes.
+        :return: :class:`Response <Response>` object
+        :rtype: requests.Response
+        """
+
+        url = str(self)
+        response = requests.get(url, params, **kwargs)
+        return response
+
+    def options(self, **kwargs):
+        """Sends a OPTIONS request.
+
+        :param \*\*kwargs: Optional arguments that ``request`` takes.
+        :return: :class:`Response <Response>` object
+        :rtype: requests.Response
+        """
+
+        url = str(self)
+        return requests.options(url, **kwargs)
+
+    def head(self, **kwargs):
+        """Sends a HEAD request.
+
+        :param \*\*kwargs: Optional arguments that ``request`` takes.
+        :return: :class:`Response <Response>` object
+        :rtype: requests.Response
+        """
+
+        url = str(self)
+        return requests.options(url, **kwargs)
+
+    def post(self, data=None, json=None, **kwargs):
+        """Sends a POST request.
+
+        :param data: (optional) Dictionary, bytes, or file-like object to send in the body of the :class:`Request`.
+        :param json: (optional) json data to send in the body of the :class:`Request`.
+        :param \*\*kwargs: Optional arguments that ``request`` takes.
+        :return: :class:`Response <Response>` object
+        :rtype: requests.Response
+        """
+
+        url = str(self)
+        return requests.options(url, data=data, json=json, **kwargs)
+
+    def put(self, data=None, **kwargs):
+        """Sends a PUT request.
+
+        :param data: (optional) Dictionary, bytes, or file-like object to send in the body of the :class:`Request`.
+        :param \*\*kwargs: Optional arguments that ``request`` takes.
+        :return: :class:`Response <Response>` object
+        :rtype: requests.Response
+        """
+
+        url = str(self)
+        return requests.put(url, data=data, **kwargs)
+
+    def patch(self, data=None, **kwargs):
+        """Sends a PATCH request.
+
+        :param data: (optional) Dictionary, bytes, or file-like object to send in the body of the :class:`Request`.
+        :param \*\*kwargs: Optional arguments that ``request`` takes.
+        :return: :class:`Response <Response>` object
+        :rtype: requests.Response
+        """
+
+        url = str(self)
+        return requests.patch(url,  data=data, **kwargs)
+
+
+    def delete(self, **kwargs):
+        """Sends a DELETE request.
+
+        :param \*\*kwargs: Optional arguments that ``request`` takes.
+        :return: :class:`Response <Response>` object
+        :rtype: requests.Response
+        """
+
+        url = str(self)
+        return requests.delete(url, **kwargs)
+
 
     @property
     def jailed(self):

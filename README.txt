@@ -136,6 +136,19 @@ Replace query::
     >>> url.with_query(None)
     URL('https://username:password@secure.example.com:1234/path/to/file.ext#fragment')
 
+Do HTTP requests:
+
+    >>> url.get()
+    <Response [200]>
+    >>> url.post(data={'key': 'value'})
+    <Response [200]>
+    >>> url.delete()
+    <Response [204]>
+    >>> url.patch(data={'key': 'value'})
+    <Response [202]>
+    >>> url.put(data={'key': 'value'})
+    <Response [202]>
+
 Jail::
 
     >>> root = 'http://www.example.com/app/'
