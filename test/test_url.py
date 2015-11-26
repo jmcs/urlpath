@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 import unittest
-from urlpath import URL, JailedURL
+from httpath import URL, JailedURL
 
 
 class UrlTest(unittest.TestCase):
