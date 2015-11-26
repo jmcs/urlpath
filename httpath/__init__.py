@@ -319,74 +319,43 @@ class URL(urllib.parse._NetlocResultMixinStr, PurePath):
         """Return a new url with the file suffix changed (or added, if none)."""
         return super().with_suffix(urllib.parse.quote(suffix, safe='.'))
 
-    def with_components(self, *, scheme=missing, netloc=missing, username=missing, password=missing, hostname=missing,
-                        port=missing, path=missing, name=missing, query=missing, fragment=missing):
+    def with_components(self, *, scheme=missing, netloc=None, username=None, password=None, hostname=None,
+                        port=None, path=None, name=None, query=None, fragment=None):
         """Return a new url with components changed."""
+        # TODO document what each argument does
+        # TODO replace asserts with proper exceptions
         if scheme is missing:
             scheme = self.scheme
         elif scheme is not None and not isinstance(scheme, str):
             scheme = str(scheme)
 
-        if username is not missing or password is not missing or hostname is not missing or port is not missing:
-            assert netloc is missing
-
-            if username is missing:
-                username = self.username
-            elif username is not None and not isinstance(username, str):
-                username = str(username)
-
-            if password is missing:
-                password = self.password
-            elif password is not None and not isinstance(password, str):
-                password = str(password)
-
-            if hostname is missing:
-                hostname = self.hostname
-            elif hostname is not None and not isinstance(hostname, str):
-                hostname = str(hostname)
-
-            if port is missing:
-                port = self.port
-
+        if username is not None or password is not None or hostname is not None or port is not None:
+            assert netloc is None
+            username = username if username is not None else self.username
+            password = password if password is not None else self.password
+            hostname = hostname if hostname is not None else self.hostname
+            port = port or self.port
             netloc = netlocjoin(username, password, hostname, port)
+        else:
+            netloc = self.netloc if netloc is None else str(netloc)
 
-        elif netloc is missing:
-            netloc = self.netloc
-
-        elif netloc is not None and not isinstance(netloc, str):
-            netloc = str(netloc)
-
-        if name is not missing:
-            assert path is missing
-
-            if not isinstance(name, str):
-                name = str(name)
-
+        if name is not None:
+            assert path is None
+            name = str(name)
             path = urllib.parse.urljoin(self.path.rstrip(self._flavour.sep), urllib.parse.quote(name, safe=''))
+        else:
+            path = self.path if path is None else str(path)
 
-        elif path is missing:
-            path = self.path
-
-        elif path is not None and not isinstance(path, str):
-            path = str(path)
-
-        if query is missing:
+        if query is None:
             query = self.query
         elif isinstance(query, collections.Mapping):
             query = urllib.parse.urlencode(sorted(query.items()), **self._urlencode_args)
-        elif isinstance(query, str):
-            # TODO: Is escaping '#' required?
-            # query = query.replace('#', '%23')
-            pass
         elif isinstance(query, collections.Sequence):
             query = urllib.parse.urlencode(query, **self._urlencode_args)
-        elif query is not None:
+        else:
             query = str(query)
 
-        if fragment is missing:
-            fragment = self.fragment
-        elif fragment is not None and not isinstance(fragment, str):
-            fragment = str(fragment)
+        fragment = self.fragment if fragment is None else str(fragment)
 
         return self.__class__(urllib.parse.urlunsplit((scheme, netloc, path, query, fragment)))
 
