@@ -1,8 +1,7 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 import sys
-from setuptools import setup
-import urlpath as target
+from setuptools import setup, find_packages
 
 
 def readme():
@@ -17,16 +16,22 @@ if sys.version[:3] < '3.3':
     install_requires.append('mock')
 
 setup(
-    py_modules=[target.__name__],
-    name=target.__name__,
-    version=target.__version__,
-    author=target.__author__,
-    author_email=target.__author_email__,
-    url=target.__url__,
-    download_url=target.__download_url__,
-    description=target.__doc__.strip().splitlines()[0],
-    long_description=readme(),
-    classifiers=target.__classifiers__,
-    license=target.__license__,
-    install_requires=install_requires,
+        packages=find_packages(exclude=['tests', 'tests.*']),
+        name='httpath',
+        version='0.1',
+        author='João Santos',
+        author_email='jmcs@jsantos.eu',
+        url='https://github.com/jmcs/httpath',
+        description="Object-oriented HTTP from `urllib.parse`, `pathlib` and `requests`",
+        long_description=readme(),
+        classifiers=['Development Status :: 5 - Production/Stable',
+                     'Environment :: Web Environment',
+                     'Intended Audience :: Developers',
+                     'License :: OSI Approved :: Python Software Foundation License',
+                     'Operating System :: OS Independent',
+                     'Programming Language :: Python :: 3.4',
+                     'Topic :: Internet :: WWW/HTTP',
+                     'Topic :: Software Development :: Libraries :: Python Modules'],
+        license='PSF',
+        install_requires=install_requires,
 )

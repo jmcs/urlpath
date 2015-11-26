@@ -2,23 +2,6 @@
 # -*- coding: utf-8 -*-
 """Object-oriented URL from `urllib.parse` and `pathlib`
 """
-__version__ = '1.0.5'
-__author__ = __author_email__ = 'chrono-meter@gmx.net'
-__license__ = 'PSF'
-__url__ = 'https://github.com/chrono-meter/urlpath'
-__download_url__ = 'http://pypi.python.org/pypi/urlpath'
-# http://pypi.python.org/pypi?%3Aaction=list_classifiers
-__classifiers__ = [
-    'Development Status :: 5 - Production/Stable',
-    'Environment :: Web Environment',
-    'Intended Audience :: Developers',
-    'License :: OSI Approved :: Python Software Foundation License',
-    'Operating System :: OS Independent',
-    'Programming Language :: Python :: 3.4',
-    'Topic :: Internet :: WWW/HTTP',
-    'Topic :: Software Development :: Libraries :: Python Modules',
-]
-__all__ = ('URL', )
 
 import collections
 import functools
@@ -26,6 +9,7 @@ from pathlib import _PosixFlavour, PurePath
 import urllib.parse
 import re
 import requests
+
 try:
     from unittest.mock import patch
 except ImportError:
@@ -35,10 +19,12 @@ try:
 except ImportError:
     webob = None
 
+__all__ = ('URL',)
 
 missing = object()
 
 
+# TODO replace with pyrsistence
 # http://stackoverflow.com/a/2704866/3622941
 class FrozenDict(collections.Mapping):
     """Immutable dict object."""
@@ -96,6 +82,7 @@ class FrozenMultiDict(MultiDictMixin, FrozenDict):
 def cached_property(getter):
     """Limited version of `functools.lru_cache`. But `__hash__` is not required.
     """
+
     @functools.wraps(getter)
     def helper(self):
         key = '_cached_property_' + getter.__name__
@@ -151,15 +138,16 @@ class _URLFlavour(_PosixFlavour):
 
         # trick to escape '/' in query and fragment and trailing
         if not re.match(re.escape(sep) + '+$', path):
-            path = re.sub('%s+$' % (re.escape(sep), ), lambda m: '\\x00' * len(m.group(0)), path)
+            path = re.sub('%s+$' % (re.escape(sep),), lambda m: '\\x00' * len(m.group(0)), path)
         path = urllib.parse.urlunsplit(('', '', path, query.replace('/', '\\x00'), fragment.replace('/', '\\x00')))
 
         drive = urllib.parse.urlunsplit((scheme, netloc, '', '', ''))
-        root, path = re.match('^(%s*)(.*)$' % (re.escape(sep), ), path).groups()
+        root, path = re.match('^(%s*)(.*)$' % (re.escape(sep),), path).groups()
 
         return drive, root, path
 
 
+# TODO composition instead of inheritance
 class URL(urllib.parse._NetlocResultMixinStr, PurePath):
     _flavour = _URLFlavour()
     _parse_qsl_args = {}
@@ -526,8 +514,7 @@ class URL(urllib.parse._NetlocResultMixinStr, PurePath):
         """
 
         url = str(self)
-        return requests.patch(url,  data=data, **kwargs)
-
+        return requests.patch(url, data=data, **kwargs)
 
     def delete(self, **kwargs):
         """Sends a DELETE request.
@@ -539,7 +526,6 @@ class URL(urllib.parse._NetlocResultMixinStr, PurePath):
 
         url = str(self)
         return requests.delete(url, **kwargs)
-
 
     @property
     def jailed(self):
@@ -559,12 +545,12 @@ class JailedURL(URL):
         else:
             root = URL(*args)
 
-        assert root.scheme and root.netloc and not root.query and not root.fragment, 'malformed root: %s' % (root, )
+        assert root.scheme and root.netloc and not root.query and not root.fragment, 'malformed root: %s' % (root,)
 
         if not root.path:
             root = root / '/'
 
-        return type(cls.__name__, (cls, ), {'_chroot': root})._from_parts(args)
+        return type(cls.__name__, (cls,), {'_chroot': root})._from_parts(args)
 
     def _make_child(self, args):
         drv, root, parts = self._parse_args(args)
