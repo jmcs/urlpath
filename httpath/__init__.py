@@ -319,17 +319,15 @@ class URL(urllib.parse._NetlocResultMixinStr, PurePath):
         """Return a new url with the file suffix changed (or added, if none)."""
         return super().with_suffix(urllib.parse.quote(suffix, safe='.'))
 
-    def with_components(self, *, scheme=missing, netloc=None, username=None, password=None, hostname=None,
+    def with_components(self, *, scheme=None, netloc=None, username=None, password=None, hostname=None,
                         port=None, path=None, name=None, query=None, fragment=None):
         """Return a new url with components changed."""
         # TODO document what each argument does
         # TODO replace asserts with proper exceptions
-        if scheme is missing:
-            scheme = self.scheme
-        elif scheme is not None and not isinstance(scheme, str):
-            scheme = str(scheme)
+        scheme = self.scheme if scheme is None else str(scheme)
 
-        if username is not None or password is not None or hostname is not None or port is not None:
+        any_netloc_component = any(each is not None for each in (username, password, hostname, port))
+        if any_netloc_component:
             assert netloc is None
             username = username if username is not None else self.username
             password = password if password is not None else self.password
