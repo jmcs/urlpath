@@ -14,10 +14,6 @@ try:
     from unittest.mock import patch
 except ImportError:
     from mock import patch
-try:
-    import webob
-except ImportError:
-    webob = None
 
 __all__ = ('URL',)
 
@@ -164,9 +160,6 @@ class URL(urllib.parse._NetlocResultMixinStr, PurePath):
 
         if isinstance(a, urllib.parse.ParseResult):
             return urllib.parse.urlunparse(a)
-
-        if webob and isinstance(a, webob.Request):
-            return a.url
 
         return a
 
@@ -540,8 +533,6 @@ class JailedURL(URL):
             root = URL(root)
         elif cls._chroot is not None:
             root = cls._chroot
-        elif webob and len(args) >= 1 and isinstance(args[0], webob.Request):
-            root = URL(args[0].application_url)
         else:
             root = URL(*args)
 
