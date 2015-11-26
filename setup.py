@@ -13,7 +13,7 @@ install_requires = ['requests']
 if sys.version[:3] < '3.4':
     install_requires.append('pathlib')
 if sys.version[:3] < '3.3':
-    install_requires.append('mock')
+    raise Exception("HTTPath doesn't support Python < 3.3")
 
 setup(
         packages=find_packages(exclude=['tests', 'tests.*']),

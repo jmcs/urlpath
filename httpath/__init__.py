@@ -3,21 +3,16 @@
 """Object-oriented URL from `urllib.parse` and `pathlib`
 """
 
+from pathlib import _PosixFlavour, PurePath
+from unittest.mock import patch
 import collections
 import functools
-from pathlib import _PosixFlavour, PurePath
 import urllib.parse
 import re
 import requests
 
-try:
-    from unittest.mock import patch
-except ImportError:
-    from mock import patch
 
 __all__ = ('URL',)
-
-missing = object()
 
 
 # TODO replace with pyrsistence
@@ -308,6 +303,7 @@ class URL(urllib.parse._NetlocResultMixinStr, PurePath):
     @cached_property
     def form(self):
         """The query parsed by `urllib.parse.parse_qs` of url."""
+        # TODO replace with PMAP
         return FrozenMultiDict({k: tuple(v)
                                 for k, v in urllib.parse.parse_qs(self.query, **self._parse_qsl_args).items()})
 
@@ -408,7 +404,7 @@ class URL(urllib.parse._NetlocResultMixinStr, PurePath):
         """Sends a GET request.
 
         :param params: (optional) Dictionary or bytes to be sent in the query string for the :class:`Request`.
-        :param \*\*kwargs: Optional arguments that ``request`` takes.
+        :param kwargs: Optional arguments that ``request`` takes.
         :return: :class:`Response <Response>` object
         :rtype: requests.Response
         """
@@ -420,7 +416,7 @@ class URL(urllib.parse._NetlocResultMixinStr, PurePath):
     def options(self, **kwargs):
         """Sends a OPTIONS request.
 
-        :param \*\*kwargs: Optional arguments that ``request`` takes.
+        :param kwargs: Optional arguments that ``request`` takes.
         :return: :class:`Response <Response>` object
         :rtype: requests.Response
         """
@@ -431,7 +427,7 @@ class URL(urllib.parse._NetlocResultMixinStr, PurePath):
     def head(self, **kwargs):
         """Sends a HEAD request.
 
-        :param \*\*kwargs: Optional arguments that ``request`` takes.
+        :param kwargs: Optional arguments that ``request`` takes.
         :return: :class:`Response <Response>` object
         :rtype: requests.Response
         """
@@ -444,7 +440,7 @@ class URL(urllib.parse._NetlocResultMixinStr, PurePath):
 
         :param data: (optional) Dictionary, bytes, or file-like object to send in the body of the :class:`Request`.
         :param json: (optional) json data to send in the body of the :class:`Request`.
-        :param \*\*kwargs: Optional arguments that ``request`` takes.
+        :param kwargs: Optional arguments that ``request`` takes.
         :return: :class:`Response <Response>` object
         :rtype: requests.Response
         """
@@ -456,7 +452,7 @@ class URL(urllib.parse._NetlocResultMixinStr, PurePath):
         """Sends a PUT request.
 
         :param data: (optional) Dictionary, bytes, or file-like object to send in the body of the :class:`Request`.
-        :param \*\*kwargs: Optional arguments that ``request`` takes.
+        :param kwargs: Optional arguments that ``request`` takes.
         :return: :class:`Response <Response>` object
         :rtype: requests.Response
         """
@@ -468,7 +464,7 @@ class URL(urllib.parse._NetlocResultMixinStr, PurePath):
         """Sends a PATCH request.
 
         :param data: (optional) Dictionary, bytes, or file-like object to send in the body of the :class:`Request`.
-        :param \*\*kwargs: Optional arguments that ``request`` takes.
+        :param kwargs: Optional arguments that ``request`` takes.
         :return: :class:`Response <Response>` object
         :rtype: requests.Response
         """
@@ -479,7 +475,7 @@ class URL(urllib.parse._NetlocResultMixinStr, PurePath):
     def delete(self, **kwargs):
         """Sends a DELETE request.
 
-        :param \*\*kwargs: Optional arguments that ``request`` takes.
+        :param kwargs: Optional arguments that ``request`` takes.
         :return: :class:`Response <Response>` object
         :rtype: requests.Response
         """
