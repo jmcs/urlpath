@@ -1,12 +1,10 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 import unittest
-import webob
 from urlpath import URL, JailedURL
 
 
 class UrlTest(unittest.TestCase):
-
     def test_simple(self):
         original = 'http://www.example.com/path/to/file.ext?query#fragment'
         url = URL(original)
@@ -75,7 +73,7 @@ class UrlTest(unittest.TestCase):
         self.assertEqual(url.query, query)
         self.assertSetEqual(set(url.form), {'field1', 'field2'})
         self.assertTupleEqual(url.form.get('field1'), ('value1', 'value2'))
-        self.assertTupleEqual(url.form.get('field2'), ('hello, world&python', ))
+        self.assertTupleEqual(url.form.get('field2'), ('hello, world&python',))
         self.assertIn('field1', url.form)
         self.assertIn('field2', url.form)
         self.assertNotIn('field3', url.form)
@@ -87,7 +85,7 @@ class UrlTest(unittest.TestCase):
         self.assertNotIn('field2', url.form)
         self.assertIn('field3', url.form)
         self.assertIn('field4', url.form)
-        self.assertTupleEqual(url.form.get('field3'), ('value3', ))
+        self.assertTupleEqual(url.form.get('field3'), ('value3',))
         self.assertTupleEqual(url.form.get('field4'), ('1', '2', '3'))
 
     def test_query_field_order(self):
@@ -121,27 +119,6 @@ class UrlTest(unittest.TestCase):
         self.assertEqual(URL('htp://example.com/with/sep/').trailing_sep, '/')
         self.assertEqual(URL('htp://example.com/without/sep').trailing_sep, '')
         self.assertEqual(URL('htp://example.com/with/double-sep//').trailing_sep, '//')
-
-    def test_webob(self):
-        base_url = 'http://www.example.com'
-        url = URL(webob.Request.blank('/webob/request', base_url=base_url))
-
-        self.assertEqual(str(url), 'http://www.example.com/webob/request')
-        self.assertEqual(str(url / webob.Request.blank('/replaced/path', base_url=base_url)),
-                         'http://www.example.com/replaced/path')
-        self.assertEqual(str(url / webob.Request.blank('/replaced/path')),
-                         'http://localhost/replaced/path')
-
-    def test_webob_jail(self):
-        request = webob.Request.blank('/path/to/filename.ext', {'SCRIPT_NAME': '/app/root'})
-
-        self.assertEqual(request.application_url, 'http://localhost/app/root')
-        self.assertEqual(request.url, 'http://localhost/app/root/path/to/filename.ext')
-
-        url = JailedURL(request)
-
-        self.assertEqual(str(url.chroot), 'http://localhost/app/root')
-        self.assertEqual(str(url), 'http://localhost/app/root/path/to/filename.ext')
 
     def test_jail(self):
         root = 'http://www.example.com/app/'
